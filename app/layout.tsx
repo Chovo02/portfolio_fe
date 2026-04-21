@@ -15,6 +15,7 @@ const jetbrainsMono = JetBrains_Mono({
 export const metadata: Metadata = {
   title: 'Matteo Civita | Data Scientist',
   description: 'Portfolio personale di Matteo Civita - Junior Data Scientist specializzato in ML, Deep Learning e applicazioni agent-driven nel settore finanziario.',
+  generator: 'v0.app',
   icons: {
     icon: [
       {

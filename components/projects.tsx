@@ -1,348 +1,415 @@
-"use client"
+'use client'
 
-import { useState, useRef } from "react"
-import { motion, AnimatePresence, useInView } from "framer-motion"
-import { X, ExternalLink, Github, ArrowRight } from "lucide-react"
-import { DottedText } from "./dotted-text"
+import { useState, useRef } from 'react'
+import { motion, AnimatePresence, useInView } from 'framer-motion'
+import { X, ExternalLink, Github, ArrowRight } from 'lucide-react'
+import { DottedText } from './dotted-text'
+import { ProjectMetrics } from './project-metrics'
+import Image from 'next/image'
 
-const projects = [
+interface Project {
+  id: string
+  title: string
+  description: string
+  category: 'work' | 'its' | 'personal'
+  categoryLabel: string
+  image: string
+  technologies: string[]
+  link?: string
+  github?: string
+  metrics?: {
+    accuracy?: number
+    precision?: number
+    recall?: number
+    f1Score?: number
+    auc?: number
+  }
+  performanceData?: Array<{ name: string; value: number }>
+  timelineData?: Array<{ week: string; accuracy: number; loss: number }>
+  details?: string
+}
+
+const projects: Project[] = [
+  // Work Projects
   {
-    id: 1,
-    title: "Sistema di Rilevamento Anomalie Finanziarie",
-    category: "Finanza / Machine Learning",
-    shortDesc: "Rilevamento in tempo reale di pattern insoliti nei dati transazionali",
-    narrative: "Questo progetto è nato da una domanda semplice: come identifichiamo irregolarità finanziarie prima che diventino problemi? La risposta ha richiesto la costruzione di un sistema che elabora flussi di transazioni in tempo reale, applicando metodi ensemble per segnalare anomalie minimizzando i falsi positivi. La tela qui era composta da dataset massicci e il vincolo era la latenza — ogni millisecondo contava.",
-    objective: "Costruire una pipeline di anomaly detection pronta per la produzione, capace di elaborare dati finanziari ad alta frequenza con tempi di risposta inferiori al secondo.",
-    technologies: ["PyTorch", "Scikit-Learn", "PostgreSQL", "Docker", "AWS", "ClearML"],
-    metrics: [
-      { label: "Velocità Elaborazione", value: "<100ms" },
-      { label: "Tasso Falsi Positivi", value: "-45%" },
-      { label: "Transazioni Giornaliere", value: "1M+" },
+    id: 'work-fraud',
+    title: 'Rilevamento Frodi Finanziarie',
+    description: 'Sistema ML per identificare transazioni fraudolente in tempo reale utilizzando ensemble methods e feature engineering avanzato.',
+    category: 'work',
+    categoryLabel: 'Lavoro',
+    image: '/images/project-work-1.jpg',
+    technologies: ['Python', 'XGBoost', 'Pandas', 'Scikit-learn'],
+    metrics: {
+      accuracy: 0.96,
+      precision: 0.94,
+      recall: 0.92,
+      f1Score: 0.93,
+      auc: 0.98,
+    },
+    performanceData: [
+      { name: 'True Negatives', value: 96 },
+      { name: 'True Positives', value: 92 },
+      { name: 'False Positives', value: 6 },
+      { name: 'False Negatives', value: 8 },
     ],
-    phases: ["Pipeline Dati", "Sviluppo Modello", "Deploy Produzione"],
-    color: "#d71921"
+    timelineData: [
+      { week: 'S1', accuracy: 78, loss: 0.45 },
+      { week: 'S2', accuracy: 82, loss: 0.38 },
+      { week: 'S3', accuracy: 88, loss: 0.28 },
+      { week: 'S4', accuracy: 92, loss: 0.15 },
+      { week: 'S5', accuracy: 94, loss: 0.08 },
+      { week: 'S6', accuracy: 96, loss: 0.04 },
+    ],
+    details: 'Progetto realizzato presso l\'azienda di fintech. Implementazione di un sistema completo di machine learning per il rilevamento di frodi. Il modello utilizza gradient boosting e viene aggiornato settimanalmente con nuovi dati.',
   },
   {
-    id: 2,
-    title: "Assistente Documentale GenAI",
-    category: "GenAI / NLP",
-    shortDesc: "Sistema intelligente di elaborazione e interrogazione documenti",
-    narrative: "I documenti contengono risposte, ma trovarle richiede comprensione del contesto, della struttura e dell'intento. Questa applicazione GenAI trasforma il modo in cui i team interagiscono con i loro archivi documentali. Usando large language models combinati con retrieval-augmented generation, il sistema fornisce risposte accurate e contestuali mantenendo la tracciabilità verso i materiali sorgente.",
-    objective: "Creare un assistente intelligente che comprende il contenuto dei documenti e fornisce risposte accurate e referenziate alle domande degli utenti.",
-    technologies: ["Langfuse", "Mage.AI", "PostgreSQL", "Docker", "GitLab CI"],
-    metrics: [
-      { label: "Accuratezza Query", value: "94%" },
-      { label: "Tempo Risposta", value: "<2s" },
-      { label: "Documenti Indicizzati", value: "10K+" },
+    id: 'work-risk',
+    title: 'Analisi del Rischio di Credito',
+    description: 'Pipeline di ML per valutare il rischio creditizio dei clienti, integrando dati storici e comportamentali.',
+    category: 'work',
+    categoryLabel: 'Lavoro',
+    image: '/images/project-work-1.jpg',
+    technologies: ['Python', 'LightGBM', 'SQL', 'TensorFlow'],
+    metrics: {
+      accuracy: 0.92,
+      precision: 0.89,
+      recall: 0.88,
+      auc: 0.95,
+    },
+    performanceData: [
+      { name: 'Basso Rischio', value: 45 },
+      { name: 'Medio Rischio', value: 35 },
+      { name: 'Alto Rischio', value: 20 },
     ],
-    phases: ["Design Architettura", "Implementazione RAG", "Integrazione UI"],
-    color: "#f1f1f1"
+    timelineData: [
+      { week: 'S1', accuracy: 75, loss: 0.52 },
+      { week: 'S2', accuracy: 80, loss: 0.42 },
+      { week: 'S3', accuracy: 85, loss: 0.32 },
+      { week: 'S4', accuracy: 90, loss: 0.16 },
+      { week: 'S5', accuracy: 92, loss: 0.09 },
+    ],
+    details: 'Sistema per la valutazione automatica del rischio creditizio. Utilizza multiple fonti di dati per creare profili di rischio accurati.',
+  },
+
+  // ITS Projects
+  {
+    id: 'its-nlp',
+    title: 'Sentiment Analysis Avanzato',
+    description: 'Modello transformer per analisi del sentiment in testi multilingue, sviluppato durante il corso ITS.',
+    category: 'its',
+    categoryLabel: 'ITS',
+    image: '/images/project-its-1.jpg',
+    technologies: ['Python', 'PyTorch', 'Transformers', 'BERT'],
+    metrics: {
+      accuracy: 0.88,
+      f1Score: 0.87,
+    },
+    performanceData: [
+      { name: 'Positivo', value: 40 },
+      { name: 'Neutro', value: 35 },
+      { name: 'Negativo', value: 25 },
+    ],
+    timelineData: [
+      { week: 'S1', accuracy: 70, loss: 0.60 },
+      { week: 'S2', accuracy: 76, loss: 0.48 },
+      { week: 'S3', accuracy: 82, loss: 0.35 },
+      { week: 'S4', accuracy: 88, loss: 0.18 },
+    ],
+    details: 'Progetto di machine learning avanzato realizzato durante il corso ITS. Implementazione di modelli transformer per l\'analisi del sentiment in più lingue.',
   },
   {
-    id: 3,
-    title: "Modello di Credit Risk Scoring",
-    category: "Finanza / Predictive Analytics",
-    shortDesc: "Valutazione creditizia ML-powered per decisioni di prestito",
-    narrative: "Le decisioni di credito plasmano i futuri finanziari. Questo progetto ha sviluppato un modello di scoring che valuta l'affidabilità creditizia usando pattern di dati storici, segnali comportamentali e indicatori finanziari tradizionali. La sfida era bilanciare l'accuratezza predittiva con l'interpretabilità, poiché gli stakeholder dovevano capire perché il modello raggiungeva le sue conclusioni.",
-    objective: "Sviluppare un sistema di credit scoring esplicabile che migliori i metodi di valutazione tradizionali rispettando i requisiti normativi.",
-    technologies: ["Scikit-Learn", "Pandas", "Plotly", "PostgreSQL", "Docker"],
-    metrics: [
-      { label: "Score AUC", value: "0.89" },
-      { label: "Accuratezza Modello", value: "92%" },
-      { label: "Feature Importance", value: "Esplicabile" },
+    id: 'its-time-series',
+    title: 'Forecasting Serie Temporali',
+    description: 'Modello LSTM per la previsione di serie temporali con analisi di trend e seasonality.',
+    category: 'its',
+    categoryLabel: 'ITS',
+    image: '/images/project-its-1.jpg',
+    technologies: ['TensorFlow', 'Keras', 'Pandas', 'Statsmodels'],
+    metrics: {
+      rmse: 0.12,
+      mae: 0.09,
+      r2Score: 0.94,
+    },
+    performanceData: [
+      { name: 'Trend', value: 50 },
+      { name: 'Seasonality', value: 30 },
+      { name: 'Residuals', value: 20 },
     ],
-    phases: ["Feature Engineering", "Training Modello", "Layer Explainability"],
-    color: "#d71921"
+    timelineData: [
+      { week: 'S1', accuracy: 65, loss: 0.75 },
+      { week: 'S2', accuracy: 72, loss: 0.58 },
+      { week: 'S3', accuracy: 80, loss: 0.40 },
+      { week: 'S4', accuracy: 88, loss: 0.22 },
+      { week: 'S5', accuracy: 94, loss: 0.12 },
+    ],
+    details: 'Sviluppo di un modello LSTM per il forecasting di serie temporali. Incluso analisi di trend e stagionalità con tecniche di preprocessing avanzate.',
   },
+
+  // Personal Projects
   {
-    id: 4,
-    title: "Automazione Workflow Agent-Driven",
-    category: "GenAI / Automazione",
-    shortDesc: "Agenti autonomi per processi aziendali ripetitivi",
-    narrative: "Alcune attività sono troppo sfumate per l'automazione semplice ma troppo ripetitive per l'attenzione umana. Questo progetto ha introdotto agenti AI capaci di gestire workflow complessi multi-step, prendendo decisioni basate sul contesto ed escalando quando necessario. Gli agenti apprendono dal feedback, migliorando le loro performance nel tempo riducendo l'intervento manuale.",
-    objective: "Costruire agenti autonomi che gestiscono workflow aziendali complessi con minima supervisione umana mantenendo accuratezza e compliance.",
-    technologies: ["Langfuse", "Mage.AI", "Redis", "PostgreSQL", "AWS", "Docker"],
-    metrics: [
-      { label: "Tasso Automazione", value: "78%" },
-      { label: "Riduzione Errori", value: "-60%" },
-      { label: "Tempo Elaborazione", value: "-4ore" },
-    ],
-    phases: ["Architettura Agenti", "Mapping Workflow", "Apprendimento Continuo"],
-    color: "#f1f1f1"
-  },
-  {
-    id: 5,
-    title: "Motore di Forecasting Time Series",
-    category: "Finanza / Deep Learning",
-    shortDesc: "Sistema di previsione finanziaria basato su reti neurali",
-    narrative: "I mercati finanziari sono rumorosi, ma i pattern esistono per chi sa trovarli. Questo motore di forecasting usa architetture deep learning progettate specificamente per dati sequenziali, catturando sia fluttuazioni a breve termine che trend a lungo termine. Il modello fornisce previsioni probabilistiche, quantificando l'incertezza invece di offrire falsa precisione.",
-    objective: "Creare un sistema di forecasting che fornisce previsioni affidabili con stime di incertezza calibrate per la pianificazione finanziaria.",
-    technologies: ["PyTorch", "TensorFlow", "Pandas", "ClearML", "PostgreSQL"],
-    metrics: [
-      { label: "MAPE", value: "4.2%" },
-      { label: "Orizzonte Previsione", value: "90 giorni" },
-      { label: "Calibrazione Confidenza", value: "95%" },
-    ],
-    phases: ["Preparazione Dati", "Design Architettura", "Quantificazione Incertezza"],
-    color: "#d71921"
-  },
-  {
-    id: 6,
-    title: "Piattaforma Monitoraggio Qualità Dati",
-    category: "MLOps / Infrastruttura",
-    shortDesc: "Sistema automatizzato di rilevamento drift e qualità dati",
-    narrative: "I modelli sono buoni quanto i loro dati. Questa piattaforma monitora le pipeline dati per problemi di qualità, cambiamenti di schema e drift di distribuzione prima che impattino i modelli downstream. Pensala come un sistema di controllo qualità per la tela dei dati, assicurando che ogni pennellata sia consistente e affidabile.",
-    objective: "Implementare monitoraggio continuo della qualità dati attraverso tutte le pipeline ML, abilitando rilevamento proattivo dei problemi e risoluzione.",
-    technologies: ["ClearML", "PostgreSQL", "Docker", "GitLab CI", "AWS"],
-    metrics: [
-      { label: "Problemi Rilevati", value: "100+" },
-      { label: "Latenza Alert", value: "<5min" },
-      { label: "Copertura Pipeline", value: "100%" },
-    ],
-    phases: ["Definizione Metriche", "Setup Monitoraggio", "Sistema Alert"],
-    color: "#f1f1f1"
+    id: 'personal-agent',
+    title: 'Sistema di Agent AI Agentico',
+    description: 'Framework per agenti AI autonomi con capacità di pianificazione e problem-solving.',
+    category: 'personal',
+    categoryLabel: 'Personale',
+    image: '/images/project-its-1.jpg',
+    technologies: ['Python', 'LLMs', 'Agent Framework'],
+    github: 'https://github.com',
+    details: 'Progetto personale che esplora lo sviluppo di agenti AI autonomi con capacità avanzate di ragionamento.',
   },
 ]
 
 export function Projects() {
-  const [selectedProject, setSelectedProject] = useState<typeof projects[0] | null>(null)
+  const [selectedProject, setSelectedProject] = useState<Project | null>(null)
   const ref = useRef(null)
-  const isInView = useInView(ref, { once: true, margin: "-100px" })
+  const inView = useInView(ref, { once: true, margin: '-100px' })
 
-  return (
-    <section id="projects" className="py-32 px-6 md:px-12 lg:px-24" ref={ref}>
-      <div className="max-w-6xl mx-auto">
-        <motion.div
-          initial={{ opacity: 0, y: 40 }}
-          animate={isInView ? { opacity: 1, y: 0 } : {}}
-          transition={{ duration: 0.8 }}
-        >
-          <DottedText 
-            text="PROGETTI" 
-            dotSize={3} 
-            gap={1}
-            accentIndices={[0]}
+  const workProjects = projects.filter((p) => p.category === 'work')
+  const itsProjects = projects.filter((p) => p.category === 'its')
+  const personalProjects = projects.filter((p) => p.category === 'personal')
+
+  const ProjectCard = ({ project }: { project: Project }) => (
+    <motion.button
+      onClick={() => setSelectedProject(project)}
+      initial={{ opacity: 0, y: 20 }}
+      whileInView={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.5 }}
+      viewport={{ once: true, margin: '-100px' }}
+      className="group text-left"
+    >
+      <div className="relative overflow-hidden rounded-lg border border-border bg-secondary/30 hover:bg-secondary/50 transition-colors duration-300 backdrop-blur-sm h-full flex flex-col">
+        <div className="relative w-full h-48 overflow-hidden bg-muted">
+          <Image
+            src={project.image}
+            alt={project.title}
+            fill
+            className="object-cover group-hover:scale-105 transition-transform duration-500"
           />
-          
-          <h2 className="text-4xl md:text-5xl font-bold mt-6">
-            Lavori Selezionati
-          </h2>
-          
-          <p className="text-muted-foreground mt-4 max-w-2xl leading-relaxed">
-            Ogni progetto rappresenta una tela unica, dove le tecniche di data science 
-            incontrano le sfide del mondo reale. Clicca su qualsiasi card per esplorare 
-            la storia completa.
+          <div className="absolute inset-0 bg-gradient-to-t from-secondary to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+        </div>
+
+        <div className="p-6 flex flex-col flex-grow">
+          <div className="mb-2">
+            <span className="text-xs font-mono text-accent uppercase tracking-wider bg-accent/10 px-2 py-1 rounded">
+              {project.categoryLabel}
+            </span>
+          </div>
+
+          <h3 className="text-lg font-bold mb-2 group-hover:text-accent transition-colors duration-300">
+            {project.title}
+          </h3>
+
+          <p className="text-sm text-muted-foreground mb-4 flex-grow leading-relaxed">
+            {project.description}
           </p>
-        </motion.div>
-        
-        {/* Project Grid */}
-        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6 mt-16">
-          {projects.map((project, index) => (
-            <motion.div
-              key={project.id}
-              className="group relative bg-card border border-border rounded-2xl p-6 cursor-pointer hover:border-accent/50 transition-all duration-300 overflow-hidden"
-              initial={{ opacity: 0, y: 20 }}
-              animate={isInView ? { opacity: 1, y: 0 } : {}}
-              transition={{ duration: 0.5, delay: index * 0.1 }}
-              onClick={() => setSelectedProject(project)}
-            >
-              {/* Accent indicator */}
-              <div 
-                className="absolute top-0 left-0 w-full h-1 opacity-0 group-hover:opacity-100 transition-opacity"
-                style={{ backgroundColor: project.color }}
-              />
-              
-              <div className="text-xs font-mono text-muted-foreground uppercase tracking-wider">
-                {project.category}
-              </div>
-              
-              <h3 className="text-xl font-bold mt-3 group-hover:text-accent transition-colors">
-                {project.title}
-              </h3>
-              
-              <p className="text-muted-foreground text-sm mt-3 leading-relaxed">
-                {project.shortDesc}
-              </p>
-              
-              <div className="flex flex-wrap gap-2 mt-6">
-                {project.technologies.slice(0, 3).map((tech) => (
-                  <span 
-                    key={tech}
-                    className="px-2 py-1 text-xs font-mono bg-muted rounded text-muted-foreground"
-                  >
-                    {tech}
-                  </span>
-                ))}
-                {project.technologies.length > 3 && (
-                  <span className="px-2 py-1 text-xs font-mono text-muted-foreground">
-                    +{project.technologies.length - 3}
-                  </span>
-                )}
-              </div>
-              
-              <div className="flex items-center gap-2 mt-6 text-sm text-accent opacity-0 group-hover:opacity-100 transition-opacity">
-                Vedi Dettagli <ArrowRight className="w-4 h-4" />
-              </div>
-            </motion.div>
-          ))}
+
+          <div className="flex flex-wrap gap-2 mb-4">
+            {project.technologies.slice(0, 3).map((tech) => (
+              <span key={tech} className="text-xs bg-border/50 text-foreground/70 px-2 py-1 rounded font-mono">
+                {tech}
+              </span>
+            ))}
+            {project.technologies.length > 3 && (
+              <span className="text-xs bg-border/50 text-foreground/70 px-2 py-1 rounded font-mono">
+                +{project.technologies.length - 3}
+              </span>
+            )}
+          </div>
+
+          <div className="flex items-center gap-2 text-accent group-hover:gap-3 transition-all duration-300">
+            <span className="text-sm font-mono uppercase tracking-wider">Dettagli</span>
+            <ArrowRight className="w-4 h-4" />
+          </div>
         </div>
       </div>
-      
-      {/* Project Modal */}
+    </motion.button>
+  )
+
+  return (
+    <section ref={ref} className="py-24 px-6 md:px-12 lg:px-24">
+      <div className="max-w-6xl mx-auto">
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={inView ? { opacity: 1, y: 0 } : { opacity: 0, y: 20 }}
+          transition={{ duration: 0.8 }}
+          className="mb-16"
+        >
+          <DottedText text="PROGETTI" dotSize={3} gap={1} accentIndices={[0]} />
+
+          <h2 className="text-4xl md:text-5xl font-bold mt-6 mb-8">Lavori Selezionati</h2>
+
+          <p className="text-muted-foreground text-lg max-w-2xl leading-relaxed">
+            Una raccolta dei miei progetti professionali, accademici e personali che dimostrano la mia esperienza in machine learning, data science e sviluppo di sistemi AI.
+          </p>
+        </motion.div>
+
+        {/* Work Projects */}
+        {workProjects.length > 0 && (
+          <div className="mb-20">
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={inView ? { opacity: 1 } : { opacity: 0 }}
+              transition={{ duration: 0.5, delay: 0.1 }}
+              className="mb-8"
+            >
+              <h3 className="text-2xl font-bold text-foreground/90 mb-2">In Azienda</h3>
+              <div className="w-12 h-1 bg-accent/30" />
+            </motion.div>
+            <div className="grid md:grid-cols-2 gap-6 mb-12">
+              {workProjects.map((project) => (
+                <ProjectCard key={project.id} project={project} />
+              ))}
+            </div>
+          </div>
+        )}
+
+        {/* ITS Projects */}
+        {itsProjects.length > 0 && (
+          <div className="mb-20">
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={inView ? { opacity: 1 } : { opacity: 0 }}
+              transition={{ duration: 0.5, delay: 0.2 }}
+              className="mb-8"
+            >
+              <h3 className="text-2xl font-bold text-foreground/90 mb-2">Studi ITS</h3>
+              <div className="w-12 h-1 bg-accent/30" />
+            </motion.div>
+            <div className="grid md:grid-cols-2 gap-6 mb-12">
+              {itsProjects.map((project) => (
+                <ProjectCard key={project.id} project={project} />
+              ))}
+            </div>
+          </div>
+        )}
+
+        {/* Personal Projects */}
+        {personalProjects.length > 0 && (
+          <div className="mb-20">
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={inView ? { opacity: 1 } : { opacity: 0 }}
+              transition={{ duration: 0.5, delay: 0.3 }}
+              className="mb-8"
+            >
+              <h3 className="text-2xl font-bold text-foreground/90 mb-2">Progetti Personali</h3>
+              <div className="w-12 h-1 bg-accent/30" />
+            </motion.div>
+            <div className="grid md:grid-cols-2 gap-6">
+              {personalProjects.map((project) => (
+                <ProjectCard key={project.id} project={project} />
+              ))}
+            </div>
+          </div>
+        )}
+      </div>
+
+      {/* Project Detail Modal */}
       <AnimatePresence>
         {selectedProject && (
-          <ProjectModal 
-            project={selectedProject} 
-            onClose={() => setSelectedProject(null)} 
-          />
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            onClick={() => setSelectedProject(null)}
+            className="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center p-4"
+          >
+            <motion.div
+              initial={{ opacity: 0, scale: 0.9, y: 20 }}
+              animate={{ opacity: 1, scale: 1, y: 0 }}
+              exit={{ opacity: 0, scale: 0.9, y: 20 }}
+              onClick={(e) => e.stopPropagation()}
+              className="bg-secondary border border-border rounded-lg max-w-4xl w-full max-h-[90vh] overflow-y-auto"
+            >
+              {/* Header */}
+              <div className="sticky top-0 bg-secondary border-b border-border p-6 flex items-start justify-between z-10">
+                <div>
+                  <div className="text-xs font-mono text-accent uppercase tracking-wider mb-2">
+                    {selectedProject.categoryLabel}
+                  </div>
+                  <h2 className="text-3xl font-bold">{selectedProject.title}</h2>
+                </div>
+                <button
+                  onClick={() => setSelectedProject(null)}
+                  className="text-muted-foreground hover:text-foreground transition-colors p-2"
+                >
+                  <X className="w-6 h-6" />
+                </button>
+              </div>
+
+              {/* Content */}
+              <div className="p-6 space-y-8">
+                {/* Description */}
+                <div>
+                  <h3 className="text-sm font-mono uppercase tracking-widest text-foreground mb-3">
+                    Descrizione
+                  </h3>
+                  <p className="text-foreground/80 leading-relaxed">{selectedProject.details}</p>
+                </div>
+
+                {/* Technologies */}
+                <div>
+                  <h3 className="text-sm font-mono uppercase tracking-widest text-foreground mb-3">
+                    Tecnologie
+                  </h3>
+                  <div className="flex flex-wrap gap-2">
+                    {selectedProject.technologies.map((tech) => (
+                      <span
+                        key={tech}
+                        className="bg-border px-3 py-2 rounded font-mono text-sm text-foreground hover:bg-accent/20 transition-colors"
+                      >
+                        {tech}
+                      </span>
+                    ))}
+                  </div>
+                </div>
+
+                {/* Metrics */}
+                {(selectedProject.metrics || selectedProject.performanceData || selectedProject.timelineData) && (
+                  <div>
+                    <h3 className="text-sm font-mono uppercase tracking-widest text-foreground mb-4">
+                      Metriche e Performance
+                    </h3>
+                    <ProjectMetrics
+                      metrics={selectedProject.metrics}
+                      performanceData={selectedProject.performanceData}
+                      timelineData={selectedProject.timelineData}
+                    />
+                  </div>
+                )}
+
+                {/* Links */}
+                {(selectedProject.link || selectedProject.github) && (
+                  <div className="flex gap-3 pt-4">
+                    {selectedProject.link && (
+                      <a
+                        href={selectedProject.link}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="flex items-center gap-2 bg-accent text-accent-foreground px-4 py-2 rounded font-mono text-sm hover:bg-accent/90 transition-colors"
+                      >
+                        <ExternalLink className="w-4 h-4" />
+                        Visualizza
+                      </a>
+                    )}
+                    {selectedProject.github && (
+                      <a
+                        href={selectedProject.github}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="flex items-center gap-2 border border-border px-4 py-2 rounded font-mono text-sm hover:bg-border/50 transition-colors"
+                      >
+                        <Github className="w-4 h-4" />
+                        Codice
+                      </a>
+                    )}
+                  </div>
+                )}
+              </div>
+            </motion.div>
+          </motion.div>
         )}
       </AnimatePresence>
     </section>
-  )
-}
-
-function ProjectModal({ 
-  project, 
-  onClose 
-}: { 
-  project: typeof projects[0]
-  onClose: () => void 
-}) {
-  return (
-    <motion.div
-      className="fixed inset-0 z-50 flex items-center justify-center p-4 md:p-8"
-      initial={{ opacity: 0 }}
-      animate={{ opacity: 1 }}
-      exit={{ opacity: 0 }}
-    >
-      {/* Backdrop */}
-      <motion.div 
-        className="absolute inset-0 bg-background/95 backdrop-blur-sm"
-        onClick={onClose}
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        exit={{ opacity: 0 }}
-      />
-      
-      {/* Modal Content */}
-      <motion.div
-        className="relative bg-card border border-border rounded-3xl w-full max-w-4xl max-h-[90vh] overflow-y-auto"
-        initial={{ opacity: 0, scale: 0.95, y: 20 }}
-        animate={{ opacity: 1, scale: 1, y: 0 }}
-        exit={{ opacity: 0, scale: 0.95, y: 20 }}
-        transition={{ duration: 0.3 }}
-      >
-        {/* Header */}
-        <div className="sticky top-0 bg-card border-b border-border p-6 flex items-start justify-between z-10">
-          <div>
-            <span className="text-xs font-mono text-accent uppercase tracking-wider">
-              {project.category}
-            </span>
-            <h3 className="text-2xl md:text-3xl font-bold mt-2">{project.title}</h3>
-          </div>
-          <button 
-            onClick={onClose}
-            className="p-2 hover:bg-muted rounded-full transition-colors"
-            aria-label="Chiudi modale"
-          >
-            <X className="w-6 h-6" />
-          </button>
-        </div>
-        
-        {/* Content */}
-        <div className="p-6 md:p-8 space-y-8">
-          {/* Narrative */}
-          <div>
-            <h4 className="text-sm font-mono text-muted-foreground uppercase tracking-wider mb-3">
-              La Storia
-            </h4>
-            <p className="text-foreground/90 leading-relaxed">
-              {project.narrative}
-            </p>
-          </div>
-          
-          {/* Objective */}
-          <div>
-            <h4 className="text-sm font-mono text-muted-foreground uppercase tracking-wider mb-3">
-              Obiettivo
-            </h4>
-            <p className="text-foreground/90 leading-relaxed">
-              {project.objective}
-            </p>
-          </div>
-          
-          {/* Metrics */}
-          <div>
-            <h4 className="text-sm font-mono text-muted-foreground uppercase tracking-wider mb-4">
-              Risultati Chiave
-            </h4>
-            <div className="grid grid-cols-3 gap-4">
-              {project.metrics.map((metric) => (
-                <div 
-                  key={metric.label}
-                  className="bg-muted/50 rounded-xl p-4 text-center"
-                >
-                  <div className="text-2xl md:text-3xl font-bold text-accent">
-                    {metric.value}
-                  </div>
-                  <div className="text-xs text-muted-foreground mt-1 font-mono">
-                    {metric.label}
-                  </div>
-                </div>
-              ))}
-            </div>
-          </div>
-          
-          {/* Roadmap */}
-          <div>
-            <h4 className="text-sm font-mono text-muted-foreground uppercase tracking-wider mb-4">
-              Fasi di Sviluppo
-            </h4>
-            <div className="flex flex-wrap items-center gap-2">
-              {project.phases.map((phase, index) => (
-                <div key={phase} className="flex items-center">
-                  <div className="bg-accent/20 border border-accent/30 rounded-full px-4 py-2 text-sm">
-                    <span className="text-accent font-mono mr-2">{index + 1}</span>
-                    {phase}
-                  </div>
-                  {index < project.phases.length - 1 && (
-                    <ArrowRight className="w-4 h-4 text-muted-foreground mx-2" />
-                  )}
-                </div>
-              ))}
-            </div>
-          </div>
-          
-          {/* Technologies */}
-          <div>
-            <h4 className="text-sm font-mono text-muted-foreground uppercase tracking-wider mb-4">
-              Tecnologie
-            </h4>
-            <div className="flex flex-wrap gap-2">
-              {project.technologies.map((tech) => (
-                <span 
-                  key={tech}
-                  className="px-4 py-2 bg-muted rounded-full text-sm font-mono text-foreground"
-                >
-                  {tech}
-                </span>
-              ))}
-            </div>
-          </div>
-          
-          {/* Action Buttons */}
-          <div className="flex items-center gap-4 pt-4 border-t border-border">
-            <button className="flex items-center gap-2 bg-foreground text-background px-6 py-3 rounded-full font-medium hover:bg-accent transition-colors">
-              <ExternalLink className="w-4 h-4" />
-              Vedi Demo
-            </button>
-            <button className="flex items-center gap-2 border border-border px-6 py-3 rounded-full font-medium hover:border-accent hover:text-accent transition-colors">
-              <Github className="w-4 h-4" />
-              Codice Sorgente
-            </button>
-          </div>
-        </div>
-      </motion.div>
-    </motion.div>
   )
 }

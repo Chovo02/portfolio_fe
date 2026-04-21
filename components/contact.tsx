@@ -93,7 +93,7 @@ export function Contact() {
           transition={{ duration: 0.5, delay: 0.4 }}
         >
           <p className="text-muted-foreground text-sm font-mono">
-            Con base a Pavia, Italia
+            Con base a Torino, Italia
           </p>
         </motion.div>
         

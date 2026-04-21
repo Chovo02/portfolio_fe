@@ -4,6 +4,7 @@ import { motion } from "framer-motion"
 import { useInView } from "framer-motion"
 import { useRef } from "react"
 import { DottedText } from "./dotted-text"
+import Image from "next/image"
 
 export function About() {
   const ref = useRef(null)
@@ -25,12 +26,32 @@ export function About() {
           />
           
           <div className="grid md:grid-cols-2 gap-12 mt-8">
-            <div>
+            {/* Left column - Image and Title */}
+            <div className="space-y-8">
+              {/* Profile Image Placeholder */}
+              <div className="relative aspect-square max-w-sm rounded-2xl overflow-hidden border border-border bg-card">
+                <Image
+                  src="/images/profile-placeholder.png"
+                  alt="Matteo Civita"
+                  fill
+                  className="object-cover"
+                  priority
+                />
+                {/* Placeholder overlay - remove when real image is added */}
+                <div className="absolute inset-0 bg-gradient-to-br from-muted/30 to-background/20 flex items-center justify-center">
+                </div>
+                {/* Accent corner */}
+                <div className="absolute top-0 right-0 w-16 h-16">
+                  <div className="absolute top-2 right-2 w-2 h-2 bg-accent rounded-full" />
+                </div>
+              </div>
+              
               <h2 className="text-4xl md:text-5xl font-bold text-balance">
                 Dipingo intuizioni sulla tela dei dati.
               </h2>
             </div>
             
+            {/* Right column - Bio */}
             <div className="space-y-6 text-muted-foreground leading-relaxed">
               <p>
                 Approccio la data science come un artista si approccia a una tela bianca. 
@@ -48,7 +69,7 @@ export function About() {
                 statiche verso sistemi intelligenti e dinamici.
               </p>
               <p>
-                Con base a Pavia, Italia, porto una mentalità metodica ma adattabile a 
+                Con base a Torino, Italia, porto una mentalità metodica ma adattabile a 
                 ogni progetto. Apprendere velocemente e pensare sistematicamente sono 
                 le pennellate che definiscono il mio approccio alla costruzione della 
                 prossima generazione di infrastrutture AI.
